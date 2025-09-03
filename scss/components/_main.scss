@@ -1,0 +1,204 @@
+@use "../utils/" as u;
+ 
+.main {
+  margin: u.rem(32);
+
+  // ensure table spans full width and cells distribute evenly
+  table {
+    width: 100%;
+    table-layout: fixed;
+    overflow: hidden;
+    border-collapse: collapse; // allow borders to merge
+    background-color: #fcfcfc;
+  }
+}
+
+.habits {
+  padding: 0 !important;
+  margin: 0 !important;
+  border-bottom: none !important;
+  height: u.rem(50);
+
+  .total {
+    width: u.rem(100) !important;
+    font-size: u.rem(14);
+    font-weight: 500;
+    margin-left: 0;
+    height: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid #E3DFDC;
+    border-bottom: 1px solid #E3DFDC;
+
+  }
+
+  .habits-container {
+    margin: 0 !important;
+    height: inherit;
+    border-bottom: 1px solid #E3DFDC;
+    border-left: 1px solid #E3DFDC;
+  }
+
+  .days-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    .month-header-days {
+      border: none !important;
+    }
+    
+    .day {
+      flex: 1;
+      height: u.rem(50);
+      border-right: 1px solid #E3DFDC;
+      // border-bottom: 1px solid #E3DFDC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: u.rem(12);
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #f5f5f5;
+      }
+      
+      &:last-child {
+        border-right: none;
+      }
+      
+      &.completed {
+        // background-color: #e8f5e8;
+        color: black;
+        font-weight: 600;
+        border-right: 1px solid #E3DFDC; // Preserve the border
+        
+        &::after {
+          content: "✓";
+          color: rgb(9, 182, 9);
+          font-size: u.rem(14);
+        }
+        
+        &:last-child {
+          border-right: none; // Remove border on last element
+        }
+      }
+
+      &.missed {
+        // background-color: #ffebee;
+        color: black;
+        font-weight: 600;
+        border-right: 1px solid #E3DFDC; // Preserve the border
+        
+        &::after {
+          content: "✗";
+          color: #f44336;
+          font-size: u.rem(14);
+        }
+        
+        &:last-child {
+          border-right: none; // Remove border on last element
+        }
+      }
+    }
+  }
+
+  .habits-text {
+    font-weight: 500;
+    width: 14.5%;
+    text-align: left;
+    font-size: u.rem(14);
+    height: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: u.rem(24);
+    border-bottom: 1px solid #E3DFDC;
+  }
+}
+
+// Header row specific styling
+.month-header + .habits {
+  .days-container .day {
+    font-weight: 600;
+    background-color: #f8f9fa;
+    
+    &:hover {
+      background-color: #f8f9fa; // Disable hover for header
+      cursor: default;
+    }
+  }
+}
+
+// Habit rows styling
+tbody .habits {
+  // Alternating row colors starting from first habit row
+  &:nth-child(odd) {
+    background-color: #FAF9F7;
+    
+    .habits-text {
+      background-color: #FAF9F7;
+    }
+    
+    .total {
+      background-color: #FAF9F7;
+    }
+  }
+  
+  &:nth-child(even) {
+    background-color: #fff;
+    
+    .habits-text {
+      background-color: #fff;
+    }
+    
+    .total {
+      background-color: #fff;
+    }
+  }
+  
+  .days-container .day {
+    background-color: inherit;
+    
+  }
+}
+
+.month-header, .habits {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding-bottom: u.rem(10);
+  padding-top: u.rem(10);
+  padding-right: u.rem(100);
+  border-bottom: 1px solid #E3DFDC;
+
+
+
+  // first cell: 'Month' label
+  > .month-text {
+    flex: 0 0 16%;
+    // background-color: aquamarine;
+    text-align: left;
+    padding-left: u.rem(24);
+    font-weight: 500;
+    font-size: u.rem(14);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  // second cell: months list
+  > .months-container, .habits-container {
+    flex: 1;
+    display: flex;
+    // background-color: rgb(53, 107, 89);
+    gap: u.rem(16);
+    justify-content: space-between;
+    margin: 0 u.rem(18);
+    font-weight: 500;
+    font-size: u.rem(14);
+  }
+}
+
+// Remove or ignore .monthly-container as it's no longer in markup
