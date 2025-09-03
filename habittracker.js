@@ -6,48 +6,36 @@ const habits = JSON.parse(localStorage.getItem('habits')) || [
 ];
 
 function renderHabits() {
+  const currentMonth = getCurrentMonth();
+  const daysInMonth = getDaysInMonth(currentMonth.month, currentMonth.year);
+  
   let habitsHTML = "";
 
   habits.forEach((habit, habitIndex) => {
+    // Generate day cells based on actual days in current month
+    let dayCells = "";
+    for (let day = 1; day <= daysInMonth; day++) {
+      dayCells += `<div data-day="${day}" data-habit-index="${habitIndex}" class="day"></div>`;
+    }
+    
+    // Add disabled cells for remaining days to maintain layout (if needed)
+    for (let day = daysInMonth + 1; day <= 31; day++) {
+      dayCells += `<div data-day="${day}" data-habit-index="${habitIndex}" class="day disabled"></div>`;
+    }
+    
+    // Calculate completed total for this habit
+    const completedTotal = calculateCompletedTotal(habit, daysInMonth);
+    const totalText = `${completedTotal}/${daysInMonth}`;
+    
     habitsHTML += `
       <tr class="habits js-habit-row">
       <td class="habits-text js-habits-text" data-habit-index="${habitIndex}">${habit.name}</td>
       <td class="habits-container">
         <div class="days-container">
-          <div data-day="1" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="2" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="3" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="4" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="5" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="6" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="7" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="8" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="9" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="10" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="11" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="12" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="13" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="14" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="15" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="16" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="17" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="18" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="19" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="20" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="21" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="22" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="23" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="24" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="25" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="26" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="27" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="28" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="29" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="30" data-habit-index="${habitIndex}" class="day"></div>
-          <div data-day="31" data-habit-index="${habitIndex}" class="day"></div>
+          ${dayCells}
         </div>
       </td>
-      <td class="total"></td>
+      <td class="total">${totalText}</td>
       </tr>
     `;
   });
@@ -203,11 +191,15 @@ function showDeleteConfirmModal(habitName, habitIndex) {
 
 function addDayClickListeners() {
   document.querySelectorAll('.day').forEach((dayCell) => {
+    // Skip disabled cells (days beyond current month)
+    if (dayCell.classList.contains('disabled')) {
+      return;
+    }
+    
     const dayNumber = dayCell.dataset.day;
     const habitIndex = parseInt(dayCell.dataset.habitIndex);
     
     dayCell.addEventListener('click', () => {
-      
       const habit = habits[habitIndex];
       if (!habit.days) {
         habit.days = {};
@@ -235,6 +227,9 @@ function addDayClickListeners() {
       
       // Save to localStorage
       saveToStorage();
+      
+      // Update the total count for this habit
+      updateHabitTotal(habitIndex);
     });
   });
 }
@@ -267,6 +262,72 @@ function restoreDayStates() {
   });
 }
 
+function getDaysInMonth(month, year) {
+  // month is 0-indexed (0 = January, 11 = December)
+  if (month === 1) { // February
+    // Check for leap year
+    if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
+      return 29; // Leap year
+    } else {
+      return 28; // Regular year
+    }
+  } else if ([3, 5, 8, 10].includes(month)) { // April, June, September, November
+    return 30;
+  } else { // January, March, May, July, August, October, December
+    return 31;
+  }
+}
+
+function getCurrentMonth() {
+  const now = new Date();
+  return {
+    month: now.getMonth(), // 0-indexed
+    year: now.getFullYear(),
+    monthName: now.toLocaleString('default', { month: 'long' })
+  };
+}
+
+function calculateCompletedTotal(habit, daysInMonth) {
+  if (!habit.days) return 0;
+  
+  let completedCount = 0;
+  for (let day = 1; day <= daysInMonth; day++) {
+    if (habit.days[day.toString()] === 'completed') {
+      completedCount++;
+    }
+  }
+  return completedCount;
+}
+
+function updateHabitTotal(habitIndex) {
+  const currentMonth = getCurrentMonth();
+  const daysInMonth = getDaysInMonth(currentMonth.month, currentMonth.year);
+  const habit = habits[habitIndex];
+  
+  const completedTotal = calculateCompletedTotal(habit, daysInMonth);
+  const totalText = `${completedTotal}/${daysInMonth}`;
+  
+  // Find the total cell for this habit and update it
+  const habitRow = document.querySelector(`[data-habit-index="${habitIndex}"]`).closest('tr');
+  const totalCell = habitRow.querySelector('.total');
+  if (totalCell) {
+    totalCell.textContent = totalText;
+  }
+}
+
+function updateMonthHeader() {
+  const currentMonth = getCurrentMonth();
+  
+  // Update the month text to show current month and year
+  const monthTextElement = document.querySelector('.month-text');
+  if (monthTextElement) {
+    monthTextElement.textContent = `${currentMonth.monthName} ${currentMonth.year}`;
+  }
+  
+  // Keep the original month names (Jan, Feb, Mar, etc.) in the header
+  // No need to change the months-container content
+}
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -282,4 +343,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Render habits and add click listeners
   renderHabits();
+  updateMonthHeader();
 });

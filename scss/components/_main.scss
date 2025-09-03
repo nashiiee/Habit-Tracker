@@ -69,6 +69,21 @@
         border-right: none;
       }
       
+      &.disabled {
+        background-color: #f8f8f8;
+        cursor: not-allowed;
+        opacity: 0.5;
+        border-right: 1px solid #E3DFDC;
+        
+        &:hover {
+          background-color: #f8f8f8; // Disable hover effect
+        }
+        
+        &:last-child {
+          border-right: none;
+        }
+      }
+      
       &.completed {
         // background-color: #e8f5e8;
         color: black;
@@ -102,6 +117,21 @@
           border-right: none; // Remove border on last element
         }
       }
+
+      &.disabled {
+        background-color: #f8f8f8;
+        cursor: not-allowed;
+        opacity: 0.5;
+        border-right: 1px solid #E3DFDC;
+        
+        &:hover {
+          background-color: #f8f8f8; // Disable hover effect
+        }
+        
+        &:last-child {
+          border-right: none;
+        }
+      }
     }
   }
 
@@ -120,6 +150,20 @@
 }
 
 // Header row specific styling
+.month-header {
+  .month-header-days {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &.disabled {
+      opacity: 0.3;
+      color: #ccc;
+    }
+  }
+}
+
 .month-header + .habits {
   .days-container .day {
     font-weight: 600;
