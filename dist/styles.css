@@ -86,6 +86,18 @@ body {
 .habits .days-container .day.disabled:last-child {
   border-right: none;
 }
+.habits .days-container .day.past-day {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+  opacity: 0.7;
+  border-right: 1px solid #E3DFDC;
+}
+.habits .days-container .day.past-day:hover {
+  background-color: #f0f0f0;
+}
+.habits .days-container .day.past-day:last-child {
+  border-right: none;
+}
 .habits .days-container .day.completed {
   color: black;
   font-weight: 600;
@@ -110,18 +122,6 @@ body {
   font-size: 0.875rem;
 }
 .habits .days-container .day.missed:last-child {
-  border-right: none;
-}
-.habits .days-container .day.disabled {
-  background-color: #f8f8f8;
-  cursor: not-allowed;
-  opacity: 0.5;
-  border-right: 1px solid #E3DFDC;
-}
-.habits .days-container .day.disabled:hover {
-  background-color: #f8f8f8;
-}
-.habits .days-container .day.disabled:last-child {
   border-right: none;
 }
 .habits .habits-text {

@@ -42,6 +42,9 @@ function renderHabits() {
 
   document.querySelector(".js-habits-list").innerHTML = habitsHTML;
   
+  // Mark past days as missed before adding listeners
+  markPastDaysAsMissed();
+  
   // Add click listeners to habit names after rendering
   addHabitClickListeners();
   
@@ -190,14 +193,22 @@ function showDeleteConfirmModal(habitName, habitIndex) {
 }
 
 function addDayClickListeners() {
+  const currentDay = getCurrentDay();
+  
   document.querySelectorAll('.day').forEach((dayCell) => {
     // Skip disabled cells (days beyond current month)
     if (dayCell.classList.contains('disabled')) {
       return;
     }
     
-    const dayNumber = dayCell.dataset.day;
+    const dayNumber = parseInt(dayCell.dataset.day);
     const habitIndex = parseInt(dayCell.dataset.habitIndex);
+    
+    // If this is a past day, make it non-clickable and add past-day class
+    if (dayNumber < currentDay) {
+      dayCell.classList.add('past-day');
+      return; // Don't add click listener for past days
+    }
     
     dayCell.addEventListener('click', () => {
       const habit = habits[habitIndex];
@@ -205,22 +216,22 @@ function addDayClickListeners() {
         habit.days = {};
       }
       
-      const currentState = habit.days[dayNumber];
+      const currentState = habit.days[dayNumber.toString()];
       
       // Cycle through states: empty -> completed -> missed -> empty
       if (currentState === 'completed') {
         // Currently completed, change to missed
-        habit.days[dayNumber] = 'missed';
+        habit.days[dayNumber.toString()] = 'missed';
         updateDayCell(dayCell, 'missed');
         console.log(`Day ${dayNumber} marked as missed`);
       } else if (currentState === 'missed') {
         // Currently missed, change to empty
-        delete habit.days[dayNumber];
+        delete habit.days[dayNumber.toString()];
         updateDayCell(dayCell, 'empty');
         console.log(`Day ${dayNumber} cleared`);
       } else {
         // Currently empty, change to completed
-        habit.days[dayNumber] = 'completed';
+        habit.days[dayNumber.toString()] = 'completed';
         updateDayCell(dayCell, 'completed');
         console.log(`Day ${dayNumber} marked as completed`);
       }
@@ -328,6 +339,36 @@ function updateMonthHeader() {
   // No need to change the months-container content
 }
 
+function getCurrentDay() {
+  const now = new Date();
+  return now.getDate();
+}
+
+function markPastDaysAsMissed() {
+  const currentDay = getCurrentDay();
+  const currentMonth = getCurrentMonth();
+  
+  habits.forEach((habit, habitIndex) => {
+    if (!habit.days) {
+      habit.days = {};
+    }
+    
+    // Check all days from 1 to current day - 1 (yesterday and before)
+    for (let day = 1; day < currentDay; day++) {
+      const dayKey = day.toString();
+      
+      // If the day has no state (undefined), mark it as missed
+      if (!habit.days[dayKey]) {
+        habit.days[dayKey] = 'missed';
+        console.log(`Day ${day} automatically marked as missed for habit: ${habit.name}`);
+      }
+    }
+  });
+  
+  // Save the updated data
+  saveToStorage();
+}
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -344,4 +385,5 @@ document.addEventListener('DOMContentLoaded', function() {
   // Render habits and add click listeners
   renderHabits();
   updateMonthHeader();
+  markPastDaysAsMissed(); // Automatically mark past days as missed
 });

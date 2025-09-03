@@ -9,9 +9,31 @@ This project is inspired by **Atomic Habits** by James Clear. As mentioned in th
 ## 🛠️ Tech Stack
 
 - **HTML** - Structure and markup
-- **SCSS** - Styling with modern CSS preprocessing
-- **JavaScript** - Interactive functionality and logic
+- **SCSS** - Styling with modern CSS preprocessing  
+- **JavaScript (ES6 Modules)** - Modular interactive functionality and logic
 - **localStorage** - Persistent data storage in the browser
+
+## 📁 Project Structure
+
+```
+habit-tracker/
+├── index.html              # Main HTML file
+├── scss/                   # SCSS stylesheets
+│   ├── components/         # Component-specific styles
+│   ├── globals/           # Global styles and resets  
+│   └── utils/             # SCSS utilities and functions
+├── js/                    # Modular JavaScript
+│   ├── app.js            # Main application controller
+│   ├── utils.js          # Utility functions
+│   ├── habitManager.js   # Habit CRUD operations
+│   ├── dayManager.js     # Day state management
+│   ├── modalManager.js   # Modal functionality
+│   ├── renderer.js       # UI rendering functions
+│   ├── eventListeners.js # Event management
+│   └── README.md         # JavaScript documentation
+├── dist/                  # Compiled CSS
+└── README.md             # This file
+```
 
 ## ✨ Features
 

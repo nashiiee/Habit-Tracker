@@ -84,6 +84,21 @@
         }
       }
       
+      &.past-day {
+        background-color: #f0f0f0;
+        cursor: not-allowed;
+        opacity: 0.7;
+        border-right: 1px solid #E3DFDC;
+        
+        &:hover {
+          background-color: #f0f0f0; // Disable hover effect
+        }
+        
+        &:last-child {
+          border-right: none;
+        }
+      }
+      
       &.completed {
         // background-color: #e8f5e8;
         color: black;
@@ -115,21 +130,6 @@
         
         &:last-child {
           border-right: none; // Remove border on last element
-        }
-      }
-
-      &.disabled {
-        background-color: #f8f8f8;
-        cursor: not-allowed;
-        opacity: 0.5;
-        border-right: 1px solid #E3DFDC;
-        
-        &:hover {
-          background-color: #f8f8f8; // Disable hover effect
-        }
-        
-        &:last-child {
-          border-right: none;
         }
       }
     }
